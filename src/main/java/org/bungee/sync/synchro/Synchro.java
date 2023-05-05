@@ -35,6 +35,7 @@ public final class Synchro extends JavaPlugin implements Listener {
     //TODO KINDA SEVERE Async Backup
     //TODO KINDA SEVERE Convert old inventories
 
+    //TODO NOT SEVERE permissions
     //TODO NOT SEVERE Zeit in der Config die der Server versucht das Inventar herzustellen bevor er das Backup lädt
     //TODO NOT SEVERE command /sync (debug, invsee)
     //TODO NOT SEVERE warum Hashmappe ich pd und UUID wenn die pd die UUID enthält PLAYERDATAMANAGER
