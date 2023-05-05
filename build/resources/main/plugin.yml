@@ -1,0 +1,9 @@
+name: Synchro
+version: '1.0.0'
+main: org.bungee.sync.synchro.Synchro
+description: Synchronise two Server.
+author: gerryxn
+api-version: 1.18
+prefix: Synchro
+commands:
+  sync:

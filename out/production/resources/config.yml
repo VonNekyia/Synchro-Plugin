@@ -1,0 +1,16 @@
+#
+#
+#
+#
+#
+# Debugmode
+Debug: true
+# Datenbank
+MySQL:
+  database: 'sync'
+  login:
+    username: 'root'
+    password: ''
+  host:
+    ip: 'localhost'
+    port: 3306
