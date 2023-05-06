@@ -11,6 +11,7 @@ import org.bungee.sync.synchro.commands.syncTabCompleter;
 import org.bungee.sync.synchro.database.Database;
 import org.bungee.sync.synchro.events.ConnectionListener;
 import org.bungee.sync.synchro.events.InventoryInteractionListener;
+import org.bungee.sync.synchro.events.WorldUpdateListener;
 import org.bungee.sync.synchro.player.PlayerDataManager;
 import org.bungee.sync.synchro.util.BackupExecutor;
 import org.bungee.sync.synchro.util.ConfigHandler;
@@ -27,14 +28,16 @@ public final class Synchro extends JavaPlugin implements Listener {
     private static PlayerDataManager playerDataManager;
     private static Logger log;
     private static ConfigHandler configHandler;
-    private static BackupExecutor backupExecutor;
+    //private static BackupExecutor backupExecutor;
     private ProtocolManager protocolManager;
     private InventorySerilization invSer;
 
 
     //TODO KINDA SEVERE Async Backup
     //TODO KINDA SEVERE Convert old inventories
+    //TODO KINDA SEVERE remove kick when backup loads in
 
+    //TODO NOT SEVERE option to set world name in config
     //TODO NOT SEVERE permissions
     //TODO NOT SEVERE Zeit in der Config die der Server versucht das Inventar herzustellen bevor er das Backup lädt
     //TODO NOT SEVERE command /sync (debug, invsee)
@@ -54,6 +57,7 @@ public final class Synchro extends JavaPlugin implements Listener {
         //Event Registry
         Bukkit.getPluginManager().registerEvents( new ConnectionListener(this),this);
         Bukkit.getPluginManager().registerEvents( new InventoryInteractionListener(this),this);
+        Bukkit.getPluginManager().registerEvents( new WorldUpdateListener(this),this);
 
         getConfig().options().copyDefaults();
         saveDefaultConfig();
@@ -70,7 +74,7 @@ public final class Synchro extends JavaPlugin implements Listener {
 
         //Initialisiert Speicher für Spielerdaten
         playerDataManager = new PlayerDataManager(this);
-        backupExecutor = new BackupExecutor(this);
+        //backupExecutor = new BackupExecutor(this);
         log = getLogger();
 
 

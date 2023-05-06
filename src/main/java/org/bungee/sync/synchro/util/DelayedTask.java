@@ -2,7 +2,7 @@ package org.bungee.sync.synchro.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
-
+@Deprecated
 public class DelayedTask {
 
     private static Plugin plugin = null;
