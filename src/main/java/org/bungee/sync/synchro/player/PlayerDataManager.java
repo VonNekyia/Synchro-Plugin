@@ -23,7 +23,9 @@ public class PlayerDataManager {
     //private final List<PlayerData> playerDataList = new ArrayList<>();
     HashMap<UUID, PlayerData> playerDataList = new HashMap<UUID, PlayerData>();
 
-    public PlayerData getPlayerData(UUID uuid) { return playerDataList.get(uuid); }
+    public PlayerData getPlayerData(UUID uuid) {
+        return playerDataList.get(uuid);
+    }
     public HashMap<UUID, PlayerData> getPlayerDataList() { return playerDataList; }
 
     public void removePlayerData(UUID uuid) {

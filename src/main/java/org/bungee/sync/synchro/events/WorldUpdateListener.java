@@ -1,8 +1,6 @@
 package org.bungee.sync.synchro.events;
 
-import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,14 +27,12 @@ public class WorldUpdateListener implements Listener {
 
     @EventHandler
     public void onWorldUpdate(WorldSaveEvent event) {
-        System.out.println(event.getWorld().getName());
-        if(event.getWorld().getName().equals("world")){backupPlayerInv(main.getPlayerDataManager().getPlayerDataList());}
-
-
-
+        db = main.getDatabase();
+        if(event.getWorld().getName().equals(main.getConfig().getString("Backup.World.name"))){backupPlayerInv(main.getPlayerDataManager().getPlayerDataList());}
     }
 
     public void backupPlayerInv(HashMap<UUID, PlayerData> playerDataList) {
+        db = main.getDatabase();
         main.getLogger().severe(String.format("[DEBUG][WORLDUPDATELISTENER] -> Backup beginnt ..."));
         for (Map.Entry<UUID, PlayerData> playerDataEntry : playerDataList.entrySet()) {
             PlayerData pd = playerDataEntry.getValue();
@@ -47,9 +43,5 @@ public class WorldUpdateListener implements Listener {
         }
         main.getLogger().severe(String.format("[DEBUG][BACKUPEXECUTOR] -> Backup done."));
     }
-
-
-
-
 
 }

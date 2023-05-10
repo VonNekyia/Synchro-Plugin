@@ -34,8 +34,7 @@ public final class Synchro extends JavaPlugin implements Listener {
 
 
     //TODO KINDA SEVERE Async Backup
-    //TODO KINDA SEVERE Convert old inventories
-    //TODO KINDA SEVERE remove kick when backup loads in
+    //TODO KINDA SEVERE SOLVED NOT TESTED remove kick when backup loads in
 
     //TODO NOT SEVERE option to set world name in config
     //TODO NOT SEVERE permissions
@@ -44,6 +43,7 @@ public final class Synchro extends JavaPlugin implements Listener {
     //TODO NOT SEVERE warum Hashmappe ich pd und UUID wenn die pd die UUID enthält PLAYERDATAMANAGER
     //TODO NOT SEVERE Database auto reconnect
     //TODO NOT SEVERE TODO options to toggle sync factors in config (health hunger exp)
+    //TODO player.getInventory().setHeldItemSlot();
 
     @Override
     public void onEnable() {
@@ -51,32 +51,19 @@ public final class Synchro extends JavaPlugin implements Listener {
         invSer = new InventorySerilization(this);
         protocolManager = ProtocolLibrary.getProtocolManager();
         configHandler = new ConfigHandler(this);
-        //Command Registry
-        Objects.requireNonNull(getCommand("sync")).setExecutor( new syncCommand(this));
-        Objects.requireNonNull(getCommand("sync")).setTabCompleter( new syncTabCompleter());
-        //Event Registry
-        Bukkit.getPluginManager().registerEvents( new ConnectionListener(this),this);
-        Bukkit.getPluginManager().registerEvents( new InventoryInteractionListener(this),this);
-        Bukkit.getPluginManager().registerEvents( new WorldUpdateListener(this),this);
+        log = getLogger();
+        playerDataManager = new PlayerDataManager(this);
+
+        commandRegistry();
+        eventRegistry();
 
         getConfig().options().copyDefaults();
         saveDefaultConfig();
-        //Database connection
+
         database = new Database(this);
-        try {
-            database.connect();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        if(getConfigHandler().isInDebugmode()) {
-            getLogger().severe(String.format("[DEBUG][SYNC] -> Datenbankconnection: %s ", database.isConnected()));
-        }
-
-        //Initialisiert Speicher für Spielerdaten
-        playerDataManager = new PlayerDataManager(this);
-        //backupExecutor = new BackupExecutor(this);
-        log = getLogger();
-
+        database.connect();
+        database.setupDatabase();
+        if(getConfigHandler().isInDebugmode()) { getLogger().severe(String.format("[DEBUG][SYNC] -> Datenbankconnection: %s ", database.isConnected())); }
 
     }
 
@@ -85,8 +72,18 @@ public final class Synchro extends JavaPlugin implements Listener {
         database.disconnect();
     }
 
-    //Getter
-    public Database getDatabase() {return database; }
-    public PlayerDataManager getPlayerDataManager() {return playerDataManager; }
-    public ConfigHandler getConfigHandler() {return configHandler; }
+    public void commandRegistry() {
+        Objects.requireNonNull(getCommand("sync")).setExecutor( new syncCommand(this));
+        Objects.requireNonNull(getCommand("sync")).setTabCompleter( new syncTabCompleter());
+    }
+
+    public void eventRegistry() {
+        Bukkit.getPluginManager().registerEvents( new ConnectionListener(this),this);
+        Bukkit.getPluginManager().registerEvents( new InventoryInteractionListener(this),this);
+        Bukkit.getPluginManager().registerEvents( new WorldUpdateListener(this),this);
+    }
+
+    public Database getDatabase() { return database; }
+    public PlayerDataManager getPlayerDataManager() { return playerDataManager; }
+    public ConfigHandler getConfigHandler() { return configHandler; }
 }

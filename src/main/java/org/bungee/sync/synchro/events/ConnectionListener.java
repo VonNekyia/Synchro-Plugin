@@ -40,13 +40,12 @@ public class ConnectionListener implements Listener {
                 int timer = 0;
                 @Override
                 public void run() {
+                    if(!player.isOnline()){ this.cancel(); }
                     PlayerData pd = db.getPlayerData(player.getUniqueId());
                     timer++;
                     if(timer == 10) {
-                        if(main.getConfigHandler().isInDebugmode()) {main.getLogger().severe(String.format("[DEBUG][CONNECTIONLISTENER] -> Playerdata von %s konnte nach 10 Sekunden nicht Synchronisiert werden.",player.getName()));}
-                        player.kickPlayer("Database did not receive Sync might be a recent servercrash loading last backed up Inventory please rejoin");
+                        if(main.getConfigHandler().isInDebugmode()) {main.getLogger().severe(String.format("[DEBUG][CONNECTIONLISTENER] -> Playerdata von %s konnte nach 10 Sekunden nicht Synchronisiert werden, lade Backup.",player.getName()));}
                         db.setData("SYNC", true, player.getUniqueId());
-                        this.cancel();
                     }  else {
                         if (main.getConfigHandler().isInDebugmode()) {
                             main.getLogger().severe(String.format("[DEBUG][CONNECTIONLISTENER] -> Playerdata von %s wird gesucht.", player.getName()));
@@ -75,6 +74,7 @@ public class ConnectionListener implements Listener {
         float exp = explevel - level;
         player.setLevel(level);
         player.setExp(exp);
+        player.getInventory().setHeldItemSlot(pd.getHeltItemSlot());
         if(pd.getInventory() != null){player.getInventory().setContents(InventorySerilization.restoreModdedStacks(pd.getInventory()));}
         if(pd.getArmor() != null){player.getInventory().setArmorContents(InventorySerilization.restoreModdedStacks(pd.getArmor()));}
         main.getDatabase().setData("SYNC",false ,player.getUniqueId());
@@ -86,10 +86,11 @@ public class ConnectionListener implements Listener {
         Player player = event.getPlayer();
         Database db = main.getDatabase();
         PlayerDataManager pdm = main.getPlayerDataManager();
+        PlayerData pd = pdm.getPlayerData(event.getPlayer().getUniqueId());
 
         //Spielers Playerdata wird gespeichert
-        if(pdm.getPlayerData(event.getPlayer().getUniqueId()) != null)
-            db.updatePlayerData(player.getHealth(),player.getFoodLevel(), player.getExp() + player.getLevel(), player.getUniqueId(),true, InventorySerilization.saveModdedStacksData(player.getInventory().getContents()), InventorySerilization.saveModdedStacksData(player.getInventory().getArmorContents()));
+        if(pd != null)
+            db.updatePlayerData(player.getHealth(),player.getFoodLevel(), player.getExp() + player.getLevel(), player.getUniqueId(),true, InventorySerilization.saveModdedStacksData(player.getInventory().getContents()), InventorySerilization.saveModdedStacksData(player.getInventory().getArmorContents()), player.getInventory().getHeldItemSlot());
 
         //Spieler wird aus der Liste der Online-Spieler entfernt
         pdm.removePlayerData(player.getUniqueId());

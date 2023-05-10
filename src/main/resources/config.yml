@@ -8,9 +8,14 @@ Debug: true
 # Datenbank
 MySQL:
   database: 'sync'
+  table: 'playerdata_sync'
   login:
     username: 'root'
     password: ''
   host:
     ip: 'localhost'
     port: 3306
+#
+Backup:
+  World:
+    name: 'world'

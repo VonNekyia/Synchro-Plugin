@@ -16,7 +16,16 @@ public class PlayerData implements Serializable {
     private boolean sync;
     private String armor;
     private String inventory;
+    private int heltItemSlot;
+    private int headpoints;
 
+    public int getHeadpoints() { return headpoints; }
+
+    public void setHeadpoints(int headpoints) { this.headpoints = headpoints ; }
+
+    public int getHeltItemSlot() { return heltItemSlot; }
+
+    public void setHeltItemSlot(int heltItemSlot) { this.heltItemSlot = heltItemSlot; }
 
     public UUID getUuid() {
         return uuid;

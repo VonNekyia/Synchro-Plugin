@@ -1,9 +1,12 @@
 name: Synchro
 version: '1.0.0'
 main: org.bungee.sync.synchro.Synchro
-description: Synchronise two Server.
-author: gerryxn
+description: Synchronise Minecraft Server.
+authors: [ gerryxn ]
 api-version: 1.18
 prefix: Synchro
+website: haraxx.net
+depend: [ ProtocolLib ]
 commands:
   sync:
+    description: Sync Command.
