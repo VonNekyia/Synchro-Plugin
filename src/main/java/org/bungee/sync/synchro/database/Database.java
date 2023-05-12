@@ -47,7 +47,7 @@ public class Database {
         if (this.connection != null) {
             PreparedStatement query = null;
             try {
-                String data = "CREATE TABLE IF NOT EXISTS `" + main.getConfig().getString("MySQL.table") + "` (ID int(10) AUTO_INCREMENT, UUID char(36) NOT NULL UNIQUE, INVENTORY LONGTEXT NOT NULL, HEALTH DOUBLE NOT NULL, HUNGER int(11) NOT NULL, EXPERIENCE float NOT NULL,  ENDERCHEST LONGTEXT NOT NULL, SYNC tinyint(1) NOT NULL, PRIMARY KEY(id));";
+                String data = "CREATE TABLE IF NOT EXISTS `" + main.getConfig().getString("MySQL.table") + "` (ID int(10) AUTO_INCREMENT, UUID char(36) NOT NULL UNIQUE, INVENTORY LONGTEXT NOT NULL, HEALTH DOUBLE NOT NULL, HUNGER int(11) NOT NULL, HELTITEMSLOT int(11) NOT NULL, EXPERIENCE float NOT NULL,  ENDERCHEST LONGTEXT NOT NULL, SYNC tinyint(1) NOT NULL, PRIMARY KEY(id));";
                 query = this.connection.prepareStatement(data);
                 query.execute();
             } catch (SQLException e) {
@@ -202,15 +202,16 @@ public class Database {
                 pd.setEnderchest(rs.getString("ENDERCHEST"));
                 return pd;
             } else {
-                //TODO Playerdata local weitergeben
-                int hunger = 20;
-                double health = 20;
-                float experience = 0;
-                boolean sync = true;
-                String inventory = "";
-                int heltItemSlot = 1;
-                String enderchest = "";
-                createPlayerDataEntry(health, hunger, experience, uuid, sync, inventory, heltItemSlot, enderchest);
+                PlayerData pd = new PlayerData();
+                pd.setSync(true);
+                pd.setHunger(20);
+                pd.setExperience(0);
+                pd.setHealth(20);
+                pd.setEnderchest("");
+                pd.setInventory("");
+                pd.setHeltItemSlot(1);
+                createPlayerDataEntry(pd.getHealth(), pd.getHunger(), pd.getExperience(), uuid, true, pd.getInventory(), pd.getHeltItemSlot(), pd.getEnderchest());
+                return pd;
             }
 
         } catch (SQLException e) {
