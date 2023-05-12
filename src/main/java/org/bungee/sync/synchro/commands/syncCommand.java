@@ -4,22 +4,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bungee.sync.synchro.Synchro;
 import org.bungee.sync.synchro.player.PlayerData;
 import org.bungee.sync.synchro.util.InventorySerilization;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 public class syncCommand implements CommandExecutor {
 
@@ -30,102 +22,65 @@ public class syncCommand implements CommandExecutor {
         this.main = main;
     }
 
-
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (sender instanceof Player) {
-            if(args.length >= 1){
-                    Player p = (Player) sender;
 
-                    double health = p.getHealth();
-                    int hunger = p.getFoodLevel();
-                    int experience = p.getTotalExperience();
-                    UUID uuid = p.getUniqueId();
-                    boolean sync = true;
+        if (!(args.length >= 1)) {
+            sender.sendMessage("ERROR: Bitte nutze /sync <command> <argumente>.");
+            return false;
+        }
 
-                    if(Objects.equals(args[0], "invsee") && p.hasPermission("sync.invsee")){
-                        PlayerData pd = main.getDatabase().getInvseeData(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
-                        p.sendMessage("ARMOR: " + pd.getArmor() + "| INVENTORY: " + pd.getInventory());
-                        try {
-                            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(InventorySerilization.itemStackArrayToBase64(InventorySerilization.restoreModdedStacks(pd.getInventory()))));
-                            BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
-                            Inventory inventory = Bukkit.getServer().createInventory(null, dataInput.readInt());
-
-                            p.openInventory(inventory);
-
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-
-                    }
-                    if(Objects.equals(args[0], "debug") && p.hasPermission("sync.debug")){
-                        if(Objects.equals(args[1], "enable")){
-                            main.getConfig().set("Debug", true);
-                        }
-                        if(Objects.equals(args[1], "disable")){
-                            main.getConfig().set("Debug", false);
-                        }
-                    }
-                    if(Objects.equals(args[0], "kp") && p.hasPermission("sync.kp")){
-                        System.out.println("kp Command");
-                        if(args.length == 1) {
-                            p.sendMessage("Deine Köpfepunkte: " +main.getPlayerDataManager().getPlayerData(p.getUniqueId()).getHeadpoints() + " .");
-                        } else if(Objects.equals(args[1], "add") && args.length == 4){
-                            if(main.getPlayerDataManager().getPlayerData(p.getUniqueId()) != null){
-                                try{
-                                    int number = Integer.parseInt(args[3]);
-                                    Player pp;
-                                    for(Player player : Bukkit.getOnlinePlayers()) {
-                                        System.out.println(args[2]);
-                                        System.out.println(player.getName());
-                                        if(player.getName().equals(args[2])){
-                                            pp = player;
-                                            PlayerData pd = main.getPlayerDataManager().getPlayerData(pp.getUniqueId());
-                                            int newheadpoints = pd.getHeadpoints() + number;
-                                            if(newheadpoints <= 1000000) {
-                                                pd.setHeadpoints(newheadpoints);
-                                                main.getDatabase().updateHeadPoints(pp.getUniqueId(),newheadpoints);
-                                            } else { p.sendMessage(String.format("Der Spieler %s kann nicht mehr als 10^6 Köpfepunkte haben.", pp.getName())); }
-                                        }
-                                    }
-                                }
-                                catch (NumberFormatException ex){
-                                    ex.printStackTrace();
-                                }
-                            }
-                        } else if(Objects.equals(args[1], "remove" ) && args.length == 4){
-                            if(main.getPlayerDataManager().getPlayerData(p.getUniqueId()) != null){
-                                try{
-                                    int number = Integer.parseInt(args[3]);
-                                    Player pp;
-                                    for(Player player : Bukkit.getOnlinePlayers()) {
-                                        System.out.println(args[2]);
-                                        System.out.println(player.getName());
-                                        if(player.getName().equals(args[2])){
-                                            pp = player;
-                                            PlayerData pd = main.getPlayerDataManager().getPlayerData(pp.getUniqueId());
-                                            int newheadpoints = pd.getHeadpoints() - number;
-                                            if(newheadpoints >= 0) {
-                                                pd.setHeadpoints(newheadpoints);
-                                                main.getDatabase().updateHeadPoints(pp.getUniqueId(),newheadpoints);
-                                            } else { p.sendMessage(String.format("Der Spieler %s hat nicht genug Köpfepunkte dafür.", pp.getName())); }
-                                        }
-                                    }
-                                }
-                                catch (NumberFormatException ex){
-                                    ex.printStackTrace();
-                                }
-                            }
-
-                        }
-
-                    }
-
+        if (Objects.equals(args[0], "debug") && sender.hasPermission("sync.debug")) {
+            if (!(args.length >= 2)) {
+                sender.sendMessage("ERROR: Bitte nutze /sync debug <enable/disable>.");
+                return false;
             }
+            if (Objects.equals(args[1], "enable")) {
+                main.getConfig().set("Debug", true);
+            }
+            if (Objects.equals(args[1], "disable")) {
+                main.getConfig().set("Debug", false);
+            }
+        }
+
+        if (!(sender instanceof Player p)) {
+            sender.sendMessage("ERROR: Du musst für diesen Command ein Spieler sein!");
+            return false;
+        }
+
+        if (Objects.equals(args[0], "invsee") && p.hasPermission("sync.invsee")) {
+            if (!(args.length >= 2)) {
+                p.sendMessage("ERROR: Bitte nutze /sync invsee <Player>.");
+                return false;
+            }
+
+            PlayerData pd = main.getDatabase().getInventoryData(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
+
+            if (pd == null) {
+                p.sendMessage("ERROR: Der gesuchte Spieler hat nie den Server betreten.");
+                return false;
+            }
+            Inventory inventory = Bukkit.getServer().createInventory(null, 45);
+            inventory.setContents(InventorySerilization.restoreModdedStacks(pd.getInventory()));
+            p.openInventory(inventory);
+        }
+        if (Objects.equals(args[0], "endersee") && p.hasPermission("sync.endersee")) {
+            if (!(args.length >= 2)) {
+                p.sendMessage("ERROR: Bitte nutze /sync endersee <Player>.");
+                return false;
+            }
+
+            PlayerData pd = main.getDatabase().getEnderchestData(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
+
+            if (pd == null) {
+                p.sendMessage("ERROR: Der gesuchte Spieler hat nie den Server betreten.");
+                return false;
+            }
+            Inventory inventory = Bukkit.getServer().createInventory(null, 36);
+            inventory.setContents(InventorySerilization.restoreModdedStacks(pd.getEnderchest()));
+            p.openInventory(inventory);
         }
         return false;
     }
 
-
 }
-

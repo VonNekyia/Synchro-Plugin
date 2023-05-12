@@ -28,20 +28,24 @@ public class WorldUpdateListener implements Listener {
     @EventHandler
     public void onWorldUpdate(WorldSaveEvent event) {
         db = main.getDatabase();
-        if(event.getWorld().getName().equals(main.getConfig().getString("Backup.World.name"))){backupPlayerInv(main.getPlayerDataManager().getPlayerDataList());}
+        if (event.getWorld().getName().equals(main.getConfig().getString("Backup.World.name"))) {
+            backupPlayerInv(main.getPlayerDataManager().getPlayerDataList());
+        }
     }
 
     public void backupPlayerInv(HashMap<UUID, PlayerData> playerDataList) {
         db = main.getDatabase();
-        main.getLogger().severe(String.format("[DEBUG][WORLDUPDATELISTENER] -> Backup beginnt ..."));
+        if(main.getConfigHandler().isInDebugmode())
+            main.getLogger().severe("[DEBUG][WORLDUPDATELISTENER] -> Backup beginnt ...");
         for (Map.Entry<UUID, PlayerData> playerDataEntry : playerDataList.entrySet()) {
             PlayerData pd = playerDataEntry.getValue();
             Player player = Bukkit.getPlayer(pd.getUuid());
-            if(player != null) {
-                db.backupPlayerData(player.getHealth(),player.getFoodLevel(), player.getExp() + player.getLevel(), player.getUniqueId(), InventorySerilization.saveModdedStacksData(player.getInventory().getContents()), InventorySerilization.saveModdedStacksData(player.getInventory().getArmorContents()));
-            }
+            if (player != null)
+                db.backupPlayerData(player.getHealth(), player.getFoodLevel(), player.getExp() + player.getLevel(), player.getUniqueId(), InventorySerilization.saveModdedStacksData(player.getInventory().getContents()),InventorySerilization.saveModdedStacksData(player.getEnderChest().getContents()));
+
         }
-        main.getLogger().severe(String.format("[DEBUG][BACKUPEXECUTOR] -> Backup done."));
+        if(main.getConfigHandler().isInDebugmode())
+            main.getLogger().severe("[DEBUG][BACKUPEXECUTOR] -> Backup done.");
     }
 
 }

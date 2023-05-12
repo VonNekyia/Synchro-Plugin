@@ -14,15 +14,12 @@ import java.util.List;
 public class syncTabCompleter implements TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-            if (args.length == 1) {
-                return StringUtil.copyPartialMatches(args[0], Arrays.asList("invsee", "debug", "kp"), new ArrayList<>());
-            }
-            if(args.length == 2 && args[1].equals("debug")) {
-                return StringUtil.copyPartialMatches(args[1], Arrays.asList("enable", "disable"), new ArrayList<>());
-            }
-            if(args.length == 2 && args[1].equals("kp")) {
-                return StringUtil.copyPartialMatches(args[1], Arrays.asList("add", "remove"), new ArrayList<>());
-            }
+        if (args.length == 1) {
+            return StringUtil.copyPartialMatches(args[0], Arrays.asList("invsee","endersee", "debug"), new ArrayList<>());
+        }
+        if (args.length == 2 && args[1].equals("debug")) {
+            return StringUtil.copyPartialMatches(args[1], Arrays.asList("enable", "disable"), new ArrayList<>());
+        }
         return new ArrayList<>();
     }
 }

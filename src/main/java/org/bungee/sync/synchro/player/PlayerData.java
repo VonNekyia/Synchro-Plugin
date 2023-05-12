@@ -1,8 +1,6 @@
 package org.bungee.sync.synchro.player;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class PlayerData implements Serializable {
@@ -14,18 +12,25 @@ public class PlayerData implements Serializable {
     private double health;
     private float experience;
     private boolean sync;
-    private String armor;
     private String inventory;
     private int heltItemSlot;
-    private int headpoints;
+    private String enderchest;
 
-    public int getHeadpoints() { return headpoints; }
+    public String getEnderchest() {
+        return enderchest;
+    }
 
-    public void setHeadpoints(int headpoints) { this.headpoints = headpoints ; }
+    public void setEnderchest(String enderchest) {
+        this.enderchest = enderchest;
+    }
 
-    public int getHeltItemSlot() { return heltItemSlot; }
+    public int getHeltItemSlot() {
+        return heltItemSlot;
+    }
 
-    public void setHeltItemSlot(int heltItemSlot) { this.heltItemSlot = heltItemSlot; }
+    public void setHeltItemSlot(int heltItemSlot) {
+        this.heltItemSlot = heltItemSlot;
+    }
 
     public UUID getUuid() {
         return uuid;
@@ -33,14 +38,6 @@ public class PlayerData implements Serializable {
 
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
-    }
-
-    public String getArmor() {
-        return armor;
-    }
-
-    public void setArmor(String armor) {
-        this.armor = armor;
     }
 
     public String getInventory() {
