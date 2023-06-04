@@ -30,10 +30,10 @@ public class Database {
             TABLE = main.getConfig().getString("MySQL.table");
             PORT = main.getConfig().getInt("MySQL.host.port");
             IP = main.getConfig().getString("MySQL.host.ip");
-            if (main.getConfigHandler().isInDebugmode()) {
+            if (Synchro.getConfigHandler().isInDebugmode()) {
                 main.getLogger().severe(String.format("[DEBUG][DATABASE] -> jdbc:mysql://" + IP + ":" + PORT + "/" + DATABASE + "?useSSL=false"));
             }
-            if (main.getConfigHandler().isInDebugmode()) {
+            if (Synchro.getConfigHandler().isInDebugmode()) {
                 main.getLogger().severe(String.format("[DEBUG][DATABASE] -> Username: %s Password: %s", USERNAME, PASSWORD));
             }
             connection = DriverManager.getConnection("jdbc:mysql://" + IP + ":" + PORT + "/" + DATABASE + "?useSSL=false", USERNAME, PASSWORD);
@@ -117,7 +117,8 @@ public class Database {
         return connection;
     }
 
-
+    //TODO null error if connection not established
+    //TODO wenn server startet und db off recon starten wenn keine recon server killen
     public void disconnect() {
         if (isConnected()) {
             try {
@@ -131,7 +132,7 @@ public class Database {
 
     public <T> void setData(String column, T wert, UUID uuid) {
         try {
-            PreparedStatement statement = main.getDatabase().getConnection().prepareStatement(String.format("UPDATE %s SET %s = %s WHERE UUID = '%s';", TABLE, column, wert, uuid));
+            PreparedStatement statement = Synchro.getDatabase().getConnection().prepareStatement(String.format("UPDATE %s SET %s = %s WHERE UUID = '%s';", TABLE, column, wert, uuid));
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -141,7 +142,7 @@ public class Database {
 
     public void createPlayerDataEntry(double health, int hunger, float experience, UUID uuid, boolean sync, String inventory, int heldItemSlot, String enderchest) {
         try {
-            PreparedStatement statement1 = main.getDatabase().getConnection().prepareStatement(
+            PreparedStatement statement1 = Synchro.getDatabase().getConnection().prepareStatement(
                     "INSERT INTO " + TABLE + " (ID, HEALTH, HUNGER, ENDERCHEST, EXPERIENCE, UUID, SYNC, HELTITEMSLOT, INVENTORY) VALUES (" +
                             "default," +
                             health + "," +
@@ -158,10 +159,10 @@ public class Database {
         }
     }
 
-    public void updatePlayerData(double health, int hunger, float experience, UUID uuid, boolean sync, String inv, int heltItemSlot,String enderchest) {
+    public void updatePlayerData(double health, int hunger, float experience, UUID uuid, boolean sync, String inv, int heltItemSlot, String enderchest) {
         try {
-            String ps = String.format("UPDATE %s SET HEALTH=%s, HUNGER=%s, EXPERIENCE=%s, SYNC=%s, INVENTORY='%s', HELTITEMSLOT=%s, ENDERCHEST='%s' WHERE UUID = '%s';", TABLE, health, hunger, experience, sync, inv, heltItemSlot,enderchest , uuid);
-            PreparedStatement statement = main.getDatabase().getConnection().prepareStatement(ps);
+            String ps = String.format("UPDATE %s SET HEALTH=%s, HUNGER=%s, EXPERIENCE=%s, SYNC=%s, INVENTORY='%s', HELTITEMSLOT=%s, ENDERCHEST='%s' WHERE UUID = '%s';", TABLE, health, hunger, experience, sync, inv, heltItemSlot, enderchest, uuid);
+            PreparedStatement statement = Synchro.getDatabase().getConnection().prepareStatement(ps);
             statement.executeUpdate();
             main.getLogger().severe(String.format("[DEBUG][DATABASE] -> Playerdata von %s wurde geupdated.", uuid));
         } catch (SQLException e) {
@@ -169,11 +170,11 @@ public class Database {
         }
     }
 
-    public void backupPlayerData(double health, int hunger, float experience, UUID uuid, String inv,  String enderchest) {
+    public void backupPlayerData(double health, int hunger, float experience, UUID uuid, String inv, String enderchest) {
         try {
             checkConnection();
-            String ps = String.format("UPDATE %s SET HEALTH=%s, HUNGER=%s, EXPERIENCE=%s, INVENTORY='%s',  ENDERCHEST='%s' WHERE UUID = '%s';", TABLE, health, hunger, experience, inv,  enderchest, uuid);
-            PreparedStatement statement = main.getDatabase().getConnection().prepareStatement(ps);
+            String ps = String.format("UPDATE %s SET HEALTH=%s, HUNGER=%s, EXPERIENCE=%s, INVENTORY='%s',  ENDERCHEST='%s' WHERE UUID = '%s';", TABLE, health, hunger, experience, inv, enderchest, uuid);
+            PreparedStatement statement = Synchro.getDatabase().getConnection().prepareStatement(ps);
             statement.executeUpdate();
             main.getLogger().severe(String.format("[DEBUG][DATABASE] -> Playerdata von %s wurde gebackuped.", uuid));
         } catch (SQLException e) {
@@ -185,7 +186,7 @@ public class Database {
     public PlayerData getPlayerData(UUID uuid) {
         try {
             String ps = "SELECT HEALTH, HUNGER, EXPERIENCE, SYNC, INVENTORY,  ENDERCHEST, HELTITEMSLOT FROM " + TABLE + " WHERE UUID = ?;";
-            PreparedStatement statement = main.getDatabase().getConnection().prepareStatement(ps);
+            PreparedStatement statement = Synchro.getDatabase().getConnection().prepareStatement(ps);
             statement.setString(1, uuid.toString());
             ResultSet rs = statement.executeQuery();
 
@@ -221,14 +222,13 @@ public class Database {
     }
 
 
-
     public PlayerData getInventoryData(UUID uuid) {
 
         PlayerData pd = new PlayerData();
 
         try {
             String ps = "SELECT INVENTORY FROM " + TABLE + " WHERE UUID = ?;";
-            PreparedStatement statement = main.getDatabase().getConnection().prepareStatement(ps);
+            PreparedStatement statement = Synchro.getDatabase().getConnection().prepareStatement(ps);
             statement.setString(1, uuid.toString());
             ResultSet rs = statement.executeQuery();
 
@@ -251,7 +251,7 @@ public class Database {
 
         try {
             String ps = "SELECT ENDERCHEST FROM " + TABLE + " WHERE UUID = ?;";
-            PreparedStatement statement = main.getDatabase().getConnection().prepareStatement(ps);
+            PreparedStatement statement = Synchro.getDatabase().getConnection().prepareStatement(ps);
             statement.setString(1, uuid.toString());
             ResultSet rs = statement.executeQuery();
 

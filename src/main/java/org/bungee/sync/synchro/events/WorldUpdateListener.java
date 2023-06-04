@@ -22,30 +22,31 @@ public class WorldUpdateListener implements Listener {
 
     public WorldUpdateListener(Synchro main) {
         this.main = main;
-        db = main.getDatabase();
+        db = Synchro.getDatabase();
     }
 
     @EventHandler
     public void onWorldUpdate(WorldSaveEvent event) {
-        db = main.getDatabase();
+        db = Synchro.getDatabase();
         if (event.getWorld().getName().equals(main.getConfig().getString("Backup.World.name"))) {
-            backupPlayerInv(main.getPlayerDataManager().getPlayerDataList());
+            backupPlayerInv(Synchro.getPlayerDataManager().getPlayerDataList());
         }
     }
 
     public void backupPlayerInv(HashMap<UUID, PlayerData> playerDataList) {
-        db = main.getDatabase();
-        if(main.getConfigHandler().isInDebugmode())
-            main.getLogger().severe("[DEBUG][WORLDUPDATELISTENER] -> Backup beginnt ...");
-        for (Map.Entry<UUID, PlayerData> playerDataEntry : playerDataList.entrySet()) {
-            PlayerData pd = playerDataEntry.getValue();
-            Player player = Bukkit.getPlayer(pd.getUuid());
-            if (player != null)
-                db.backupPlayerData(player.getHealth(), player.getFoodLevel(), player.getExp() + player.getLevel(), player.getUniqueId(), InventorySerilization.saveModdedStacksData(player.getInventory().getContents()),InventorySerilization.saveModdedStacksData(player.getEnderChest().getContents()));
+        Bukkit.getScheduler().runTaskAsynchronously(main, () -> {
+            db = Synchro.getDatabase();
+            if (Synchro.getConfigHandler().isInDebugmode())
+                main.getLogger().severe("[DEBUG][WORLDUPDATELISTENER] -> Backup beginnt ...");
+            for (Map.Entry<UUID, PlayerData> playerDataEntry : playerDataList.entrySet()) {
+                PlayerData pd = playerDataEntry.getValue();
+                Player player = Bukkit.getPlayer(pd.getUuid());
+                if (player != null)
+                    db.backupPlayerData(player.getHealth(), player.getFoodLevel(), player.getExp() + player.getLevel(), player.getUniqueId(), InventorySerilization.saveModdedStacksData(player.getInventory().getContents()), InventorySerilization.saveModdedStacksData(player.getEnderChest().getContents()));
 
-        }
-        if(main.getConfigHandler().isInDebugmode())
-            main.getLogger().severe("[DEBUG][BACKUPEXECUTOR] -> Backup done.");
+            }
+            if (Synchro.getConfigHandler().isInDebugmode())
+                main.getLogger().severe("[DEBUG][BACKUPEXECUTOR] -> Backup done.");
+        });
     }
-
 }

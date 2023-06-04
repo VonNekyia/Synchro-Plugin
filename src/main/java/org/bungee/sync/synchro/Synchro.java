@@ -31,6 +31,19 @@ public final class Synchro extends JavaPlugin implements Listener {
     //TODO Enderchest remove hp
     //TODO KINDA SEVERE Async Backup
     //TODO NOT SEVERE TODO options to toggle sync factors in config (health hunger exp) Zeit in der Config die der Server versucht das Inventar herzustellen bevor er das Backup lädt
+    //TODO tab complete
+
+    public static Database getDatabase() {
+        return database;
+    }
+
+    public static PlayerDataManager getPlayerDataManager() {
+        return playerDataManager;
+    }
+
+    public static ConfigHandler getConfigHandler() {
+        return configHandler;
+    }
 
     @Override
     public void onEnable() {
@@ -39,7 +52,7 @@ public final class Synchro extends JavaPlugin implements Listener {
         protocolManager = ProtocolLibrary.getProtocolManager();
         configHandler = new ConfigHandler(this);
         log = getLogger();
-        playerDataManager = new PlayerDataManager(this);
+        playerDataManager = new PlayerDataManager();
 
         commandRegistry();
         eventRegistry();
@@ -70,17 +83,5 @@ public final class Synchro extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new ConnectionListener(this), this);
         Bukkit.getPluginManager().registerEvents(new InventoryInteractionListener(this), this);
         Bukkit.getPluginManager().registerEvents(new WorldUpdateListener(this), this);
-    }
-
-    public Database getDatabase() {
-        return database;
-    }
-
-    public PlayerDataManager getPlayerDataManager() {
-        return playerDataManager;
-    }
-
-    public ConfigHandler getConfigHandler() {
-        return configHandler;
     }
 }

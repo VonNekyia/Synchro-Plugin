@@ -54,13 +54,13 @@ public class syncCommand implements CommandExecutor {
                 return false;
             }
 
-            PlayerData pd = main.getDatabase().getInventoryData(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
+            PlayerData pd = Synchro.getDatabase().getInventoryData(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
 
             if (pd == null) {
                 p.sendMessage("ERROR: Der gesuchte Spieler hat nie den Server betreten.");
                 return false;
             }
-            Inventory inventory = Bukkit.getServer().createInventory(null, 45);
+            Inventory inventory = Bukkit.getServer().createInventory(null, 45, "Invsee");
             inventory.setContents(InventorySerilization.restoreModdedStacks(pd.getInventory()));
             p.openInventory(inventory);
         }
@@ -70,13 +70,13 @@ public class syncCommand implements CommandExecutor {
                 return false;
             }
 
-            PlayerData pd = main.getDatabase().getEnderchestData(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
+            PlayerData pd = Synchro.getDatabase().getEnderchestData(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
 
             if (pd == null) {
                 p.sendMessage("ERROR: Der gesuchte Spieler hat nie den Server betreten.");
                 return false;
             }
-            Inventory inventory = Bukkit.getServer().createInventory(null, 36);
+            Inventory inventory = Bukkit.getServer().createInventory(null, 36, "Endersee");
             inventory.setContents(InventorySerilization.restoreModdedStacks(pd.getEnderchest()));
             p.openInventory(inventory);
         }
